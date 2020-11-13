@@ -1,0 +1,251 @@
+---
+title: "Single cell RNAseq analysis of 10x genomics data using Seurat"
+
+---
+
+library (Seurat)
+library (ggplot2)
+library (patchwork)
+library (dplyr)
+library (writexl)
+
+```{Load datasets}
+h1 <- Read10X_h5("/home/ubuntu/Data/h1_filtered_feature_bc_matrix.h5")
+d1ps <- Read10X_h5("/home/ubuntu/Data/d1ps_filtered_feature_bc_matrix.h5")
+d2dlm <- Read10X_h5("/home/ubuntu/Data/d2dlm_filtered_feature_bc_matrix.h5")
+d3aus <- Read10X_h5("/home/ubuntu/Data/d3aus_filtered_feature_bc_matrix.h5")
+d3pvus <- Read10X_h5("/home/ubuntu/Data/d3pvus_filtered_feature_bc_matrix.h5")
+d3as <- Read10X_h5("/home/ubuntu/Data/d3as_filtered_feature_bc_matrix.h5")
+d3pvs <- Read10X_h5("/home/ubuntu/Data/d3pvus_filtered_feature_bc_matrix.h5")
+d4vus <- Read10X_h5("/home/ubuntu/Data/d4vus_filtered_feature_bc_matrix.h5")
+d4vs <- Read10X_h5("/home/ubuntu/Data/d4vs_filtered_feature_bc_matrix.h5")
+```
+
+```{Create objects}
+data.h1 <- CreateSeuratObject(h1, project = "h1", min.cells = 3, min.features = 200)
+data.d1ps <- CreateSeuratObject(d1ps, project = "d1ps", min.cells = 3, min.features = 200)
+data.d2dlm <- CreateSeuratObject(d2dlm, project = "d2dlm", min.cells = 3, min.features = 200)
+data.d3aus <- CreateSeuratObject(d3aus, project = "d3aus", min.cells = 3, min.features = 200)
+data.d3pvus <- CreateSeuratObject(d3pvus, project = "d3pvus", min.cells = 3, min.features = 200)
+data.d3as <- CreateSeuratObject(d3as, project = "d3as", min.cells = 3, min.features = 200)
+data.d3pvs <- CreateSeuratObject(d3pvs, project = "d3pvs", min.cells = 3, min.features = 200)
+data.d4vus <- CreateSeuratObject(d4vus, project = "d4vus", min.cells = 3, min.features = 200)
+data.d4vs <- CreateSeuratObject(d4vs, project = "d4vs", min.cells = 3, min.features = 200)
+```
+
+```{Count percent mitochondria}
+data.h1[["percent.mt"]] <- PercentageFeatureSet(data.h1, pattern = "^MT-")
+data.d1ps[["percent.mt"]] <- PercentageFeatureSet(data.d1ps, pattern = "^MT-")
+data.d2dlm[["percent.mt"]] <- PercentageFeatureSet(data.d2dlm, pattern = "^MT-")
+data.d3aus[["percent.mt"]] <- PercentageFeatureSet(data.d3aus, pattern = "^MT-")
+data.d3pvus[["percent.mt"]] <- PercentageFeatureSet(data.d3pvus, pattern = "^MT-")
+data.d3as[["percent.mt"]] <- PercentageFeatureSet(data.d3as, pattern = "^MT-")
+data.d3pvs[["percent.mt"]] <- PercentageFeatureSet(data.d3pvs, pattern = "^MT-")
+data.d4vus[["percent.mt"]] <- PercentageFeatureSet(data.d4vus, pattern = "^MT-")
+data.d4vs[["percent.mt"]] <- PercentageFeatureSet(data.d4vs, pattern = "^MT-")
+```
+
+```{Plot FeatureScatter}
+plot1<-FeatureScatter(data.h1, feature1 = "nCount_RNA", feature2 = "nFeature_RNA", pt.size = 0.1)
+plot2<-FeatureScatter(data.h1, feature1 = "nCount_RNA", feature2 = "percent.mt", pt.size = 0.1)
+plot1+plot2
+
+plot3<-FeatureScatter(data.d1ps, feature1 = "nCount_RNA", feature2 = "nFeature_RNA", pt.size = 0.1)
+plot4<-FeatureScatter(data.d1ps, feature1 = "nFeature_RNA", feature2 = "percent.mt", pt.size = 0.1)
+plot3+plot4
+
+plot5<-FeatureScatter(data.d2dlm, feature1 = "nCount_RNA", feature2 = "nFeature_RNA", pt.size = 0.1)
+plot6<-FeatureScatter(data.d2dlm, feature1 = "nFeature_RNA", feature2 = "percent.mt", pt.size = 0.1)
+plot5+plot6
+
+plot7<-FeatureScatter(data.d3aus, feature1 = "nCount_RNA", feature2 = "nFeature_RNA", pt.size = 0.1)
+plot8<-FeatureScatter(data.d3aus, feature1 = "nFeature_RNA", feature2 = "percent.mt", pt.size = 0.1)
+plot7+plot8
+
+plot9<-FeatureScatter(data.d3pvus, feature1 = "nCount_RNA", feature2 = "nFeature_RNA", pt.size = 0.1)
+plot10<-FeatureScatter(data.d3pvus, feature1 = "nFeature_RNA", feature2 = "percent.mt", pt.size = 0.1)
+plot9+plot10
+
+plot11<-FeatureScatter(data.d3as, feature1 = "nCount_RNA", feature2 = "nFeature_RNA", pt.size = 0.1)
+plot12<-FeatureScatter(data.d3as, feature1 = "nFeature_RNA", feature2 = "percent.mt", pt.size = 0.1)
+plot11+plot12
+
+plot13<-FeatureScatter(data.d3pvs, feature1 = "nCount_RNA", feature2 = "nFeature_RNA", pt.size = 0.1)
+plot14<-FeatureScatter(data.d3pvs, feature1 = "nFeature_RNA", feature2 = "percent.mt", pt.size = 0.1)
+plot13+plot14
+
+plot15<-FeatureScatter(data.d4vus, feature1 = "nCount_RNA", feature2 = "nFeature_RNA", pt.size = 0.1)
+plot16<-FeatureScatter(data.d4vus, feature1 = "nFeature_RNA", feature2 = "percent.mt", pt.size = 0.1)
+plot15+plot16
+
+plot17<-FeatureScatter(data.d4vs, feature1 = "nCount_RNA", feature2 = "nFeature_RNA", pt.size = 0.1)
+plot18<-FeatureScatter(data.d4vs, feature1 = "nFeature_RNA", feature2 = "percent.mt", pt.size = 0.1)
+plot17+plot18
+
+```
+
+```{Filter}
+data.h1 <- subset(data.h1, subset = nFeature_RNA > 3750 & nFeature_RNA < 8000 & percent.mt <14 & percent.mt >7.5)
+data.d1ps <- subset(data.d1ps, subset = nFeature_RNA > 6000 & nFeature_RNA < 9000 & percent.mt <11 & percent.mt >5)
+data.d2dlm <- subset(data.d2dlm, subset = nFeature_RNA > 4500 & nFeature_RNA < 9000 & percent.mt <11 & percent.mt >5)
+data.d3as <- subset(data.d3as, subset = nFeature_RNA > 4500 & nFeature_RNA < 8000 & percent.mt <11 & percent.mt >5)
+data.d3pvs <- subset(data.d3pvs, subset = nFeature_RNA > 5000 & nFeature_RNA < 8000 & percent.mt <11 & percent.mt >5)
+data.d3pvus <- subset(data.d3pvus, subset = nFeature_RNA > 5000 & nFeature_RNA < 9000 & percent.mt <11 & percent.mt >5)
+data.d4vs <- subset(data.d4vs, subset = nFeature_RNA > 3750 & nFeature_RNA < 8000 & percent.mt <11 & percent.mt >5)
+data.d4vus <- subset(data.d4vus, subset = nFeature_RNA > 3750 & nFeature_RNA < 8000 & percent.mt <11 & percent.mt>5)
+data.d3aus <- subset(data.d3aus, subset = nFeature_RNA  > 5000 & nFeature_RNA <9000 & percent.mt <11 & percent.mt >5)
+```
+
+```{Merge all data}
+alldata <- merge(data.h1, c(data.d1ps,data.d2dlm,data.d3aus,data.d3pvus,data.d3as,data.d3pvs, data.d4vus, data.d4vs), add.cell.ids=c("h1","d1ps","d2dlm","d3aus","d3pvus","d3as","d3pvs","d4vus","d4vs"))
+```
+
+```{Normalize}
+alldata <- NormalizeData(alldata, normalization.method = "LogNormalize", scale.factor = 10000)
+
+alldata <- NormalizeData(alldata)
+```
+
+```{Scale}
+all.genes <- rownames(alldata)
+alldata <- ScaleData(alldata, features = all.genes)
+```
+
+```{Filter cells with low housekeeping counts}
+alldata <- subset(alldata, subset = ACTB>2)
+alldata <- subset(alldata, subset = YWHAZ>0.8) 
+```
+
+```{Violin plot}
+VlnPlot(alldata, features = "nCount_RNA", pt.size = 0.1) + NoLegend()
+```
+
+```{Violin plot}
+VlnPlot(alldata, features = "percent.mt", pt.size = 0.1) + NoLegend()
+```
+
+```{Violin plot}
+VlnPlot(alldata, features = "nFeature_RNA", pt.size = 0.1) + NoLegend()
+```
+
+```{Find most variable features}
+alldata <- FindVariableFeatures(alldata, selection.method = "vst", nfeatures = 2000)
+# Identify the 10 most highly variable genes
+top10 <- head(VariableFeatures(alldata), 10)
+```
+
+```{plot variable features with and without labels}
+plot1 <- VariableFeaturePlot(alldata)
+plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
+plot1 + plot2
+```
+
+```{Dimension reduction}
+alldata <- RunPCA(alldata, npcs = 100, ndims.print = 1:5, nfeatures.print = 5)
+print(alldata[["pca"]], dims = 1:5, nfeatures = 5)
+```
+
+```{Elbow plot}
+ElbowPlot(alldata)
+```
+
+```{Clustering}
+alldata <- FindNeighbors(alldata, dims = 1:10)
+alldata <- FindClusters(alldata, resolution = 0.1)
+
+alldata <- RunUMAP(alldata, dims = 1:10)
+DimPlot(alldata, reduction = "umap")
+#saveRDS(alldata, file = "/home/ubuntu/alldata_kairos.rds")
+```
+
+
+```{Featureplot}
+FeaturePlot(alldata, features = c("YWHAZ","ACTB","SOX2","NANOG","MIXL1","TBXT")) 
+```
+
+```{Featureplot}
+FeaturePlot(alldata, features = c("HAND1", "LMO2", "ETV2", "CDH5", "PECAM1", "CD34")) 
+```
+
+```{Featureplot}
+FeaturePlot(alldata, features = c("DLL4", "SOX17", "CXCR4","FLRT2","NR2F2", "NT5E")) 
+```
+
+```{Featureplot}
+FeaturePlot(alldata, features = c("ACTC1", "TAGLN", "PDGFRB","CDK1", "MKI67")) 
+```
+
+```{Reorder clusters}
+#reordering clusters
+VlnPlot(alldata, features = c("YWHAZ","ACTB","SOX2","NANOG","MIXL1","HAND1", "LMO2", "ETV2", "CDH5", "PECAM1", "CD34", "TBXT"), pt.size=0)
+levels(alldata)
+levels(alldata) <- c("3", "5", "4", "2","0","1","6")
+levels(alldata)
+VlnPlot(alldata, features = c("YWHAZ","ACTB","SOX2","NANOG","MIXL1","HAND1", "LMO2", "ETV2", "CDH5", "PECAM1", "CD34", "TBXT"), pt.size=0)
+```
+
+```{Violin Plot}
+VlnPlot(alldata, features = c("YWHAZ","ACTB","SOX2","NANOG","MIXL1","HAND1", "LMO2", "ETV2", "CDH5", "PECAM1", "CD34", "TBXT"), pt.size=0, cols=c("#696969", "Yellow", "#F79646", "#FF0000","#8064A2", "#660066", "Green"))
+CustomPalette(low = "white", high = "red", mid = NULL, k = 20)
+PurpleAndYellow(k = 50)
+```
+
+VlnPlot(alldata, features = c("MSLN","ABCC9","KCNJ8","PDGFRB","NOTCH3","CSPG4", "RGS5", "DES", "STEAP"), pt.size=0, cols=c("#696969", "Yellow", "#F79646", "#FF0000","#8064A2", "#660066", "Green"))
+
+```{Violin plot}
+VlnPlot(alldata, features = c("DLL4", "SOX17", "CXCR4","FLRT2","NR2F2", "NT5E", "ACTC1", "TAGLN", "PDGFRB","CDK1", "MKI67"), pt.size=0, cols=c("#696969", "Yellow", "#F79646", "#FF0000","#8064A2", "#660066", "Green"))
+```
+
+```{Featureplot}
+features <- c("YWHAZ","ACTB","SOX2","NANOG","MIXL1","HAND1", "LMO2", "ETV2", "CDH5", "PECAM1", "CD34", "TBXT")
+DotPlot(alldata, features = features) + RotatedAxis()
+```
+
+```{Violin plot}
+VlnPlot(alldata, features = c("YWHAZ","ACTB","SOX2","NANOG","MIXL1","HAND1", "LMO2", "ETV2", "CDH5", "PECAM1", "CD34", "TBXT","DLL4", "SOX17", "CXCR4","FLRT2","NR2F2", "NT5E", "ACTC1", "TAGLN", "PDGFRB","CDK1", "MKI67"), pt.size=0, cols=c("#BFBFBF", "#D0CD3E", "#F79646", "#FF5E5E","#8064A2", "#660066", "#92DEC2"))
+levels(alldata)
+levels(alldata) <- c("3", "5", "4", "2","0","1","6")
+levels(alldata)
+VlnPlot(alldata, features = c("YWHAZ","ACTB","SOX2","NANOG","MIXL1","HAND1", "LMO2", "ETV2", "CDH5", "PECAM1", "CD34", "TBXT","DLL4", "SOX17", "CXCR4","FLRT2","NR2F2", "NT5E", "ACTC1", "TAGLN", "PDGFRB","CDK1", "MKI67"), pt.size=0, cols=c("#BFBFBF", "#D0CD3E", "#F79646", "#FF5E5E","#8064A2", "#660066", "#92DEC2"))
+```
+
+```{Findmarkers}
+cluster1.markers <- FindMarkers(alldata, ident.1 = 1, min.pct = 0.25)
+head(cluster1.markers, n = 5)
+```
+
+
+```{find markers for every cluster compared to all remaining cells, report only the positive ones}
+alldata.markers <- FindAllMarkers(alldata, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
+alldata.markers %>% group_by(cluster) %>% top_n(n =30, wt = avg_logFC)
+
+install.packages("writexl")
+library(writexl)
+write_xlsx(x = alldata.markers, path = "/home/rstudio/alldata-DE.xlsx", col_names = TRUE)
+```
+
+```{Top15}
+top15 <- alldata.markers %>% group_by(cluster) %>% top_n(n = 15, wt = avg_logFC)
+top15
+```
+
+```{Plot heatmap}
+DoHeatmap(subset(alldata, downsample = 300), features = top15$gene, disp.min = -3, disp.max = 3)
+levels(alldata)
+levels(alldata) <- c("3", "5", "4", "2","0","1","6")
+levels(alldata)
+library(viridis)
+DoHeatmap(subset(alldata, downsample = 300), features = top15$gene, disp.min = -3, disp.max = 3, group.colors = c("#BFBFBF", "#D0CD3E", "#F79646", "#FF5E5E","#8064A2", "#660066", "#92DEC2")) + scale_fill_gradientn(colors = RColorBrewer::brewer.pal(n = 9, name = "BuPu"))
+```
+
+```{Plot heatmap}
+DoHeatmap(subset(alldata, downsample = 300), features = top15$gene, disp.min = -3, disp.max = 3, group.colors = c("#BFBFBF", "#D0CD3E", "#F79646", "#FF5E5E","#8064A2", "#660066", "#00b100")) + scale_fill_gradient2( low = rev(c('#d1e5f0','#67a9cf','#2166ac')), mid = "white", high = rev(c('#b2182b','#ef8a62','#fddbc7')), midpoint = 0, guide = "colourbar", aesthetics = "fill")
+```
+
+
+```{save file}
+ggsave("/home/rstudio/heatmap_highres.tiff", height = 16.5, width = 12.7)
+```
+
+
+
