@@ -11,7 +11,7 @@ d4vus <- Read10X_h5("/home/ubuntu/Data/d4vus_filtered_feature_bc_matrix.h5")
 
 # Create Seurat objects
 data.d3aus <- CreateSeuratObject(d3aus, project = "d3aus", min.cells = 3, min.features = 200)
-data.d4vus <- CreateSeuratObject(d4vus, project = "d4vus", min.cells = 3, min.features = 200)```
+data.d4vus <- CreateSeuratObject(d4vus, project = "d4vus", min.cells = 3, min.features = 200)
 
 # Count mito
 data.d3aus[["percent.mt"]] <- PercentageFeatureSet(data.d3aus, pattern = "^MT-")
