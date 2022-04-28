@@ -6,8 +6,8 @@ library (dplyr)
 library(hdf5r)
 
 # Load datasets
-d3aus <- Read10X_h5("/home/ubuntu/Data/d3aus_filtered_feature_bc_matrix.h5")
-d4vus <- Read10X_h5("/home/ubuntu/Data/d4vus_filtered_feature_bc_matrix.h5")
+d3aus <- Read10X_h5("~/d3aus_filtered_feature_bc_matrix.h5")
+d4vus <- Read10X_h5("~/d4vus_filtered_feature_bc_matrix.h5")
 
 # Create Seurat objects
 data.d3aus <- CreateSeuratObject(d3aus, project = "d3aus", min.cells = 3, min.features = 200)
@@ -64,9 +64,9 @@ alldata <- FindClusters(alldata, resolution = 0.1)
 alldata <- RunUMAP(alldata, dims = 1:10)
 DimPlot(alldata, reduction = "umap", cols = c( "#660066","#FF0000","#8064A2","green","#e4a3f0","#64a27f"))
 alldata <- RenameIdents(object = alldata, `0` = "Vein endothelial 1", `1` = "Artery endothelial 1", `2` = "Vein endothelial 2",`3` = "Mesenchymal V",`4` = "Vein endothelial3", `5` = "Mesenchymal A")
-saveRDS(alldata, file = "/home/rstudio/arteryvein2022.rds")
+saveRDS(alldata, file = "~/arteryvein2022.rds")
 
-# Run ShinyCell
+# Import packages for ShinyCell
 reqPkg = c("data.table", "Matrix", "hdf5r", "reticulate", "ggplot2", 
            "gridExtra", "glue", "readr", "RColorBrewer", "R.utils", "Seurat")
 newPkg = reqPkg[!(reqPkg %in% installed.packages()[,"Package"])]
@@ -106,15 +106,14 @@ showLegend(scConf)
 # Cite paper
 checkConfig(scConf, seu)
 citation = list(
-  authors  = "Lay Teng Ang, Alana T. Nguyen, Kevin J. Liu, Angela Chen, Xiaochen Xiong, Matthew Curtis, Renata M. Martin, Brian C. Raftry, Chun Yi Ng, Uwe Vogel, Angelika Lander, Benjamin J. Lesch, Jonas L. Fowler, Alyssa R. Holman, Timothy Chai, Siva Vijayakumar, Fabian P. Suchy, Toshinobu Nishimura, Joydeep Bhadury, Matthew H. Porteus, Hiromitsu Nakauchi, Christine Cheung, Steven C. George, Kristy Red-Horse, Joseph B. Prescott & Kyle M. Loh",
-  title   = "Generating human artery and vein cells from pluripotent stem cells
+  authors  = "Lay Teng Ang, Alana T. Nguyen, Kevin J. Liu, Angela Chen, Xiaochen Xiong, Matthew Curtis, Renata M. Martin, Brian C. Raftry, Chun Yi Ng, Uwe Vogel, Angelika Lander, Benjamin J. Lesch, Jonas L. Fowler, Alyssa R. Holman, Timothy Chai, Siva Vijayakumar, Fabian P. Suchy, Toshinobu Nishimura, Joydeep Bhadury, Matthew H. Porteus, Hiromitsu Nakauchi, Christine Cheung, Steven C. George, Kristy Red-Horse, Joseph B. Prescott & Kyle M. Loh",  title   = "Generating human artery and vein cells from pluripotent stem cells
 highlights the arterial tropism of Nipah and Hendra viruses",
   journal = "Cell",
   year    = "2022")
 
 # Make shiny app
 makeShinyApp(seu, scConf, gene.mapping = TRUE, gex.assay = "RNA", gex.slot = c("data","scale.data","counts"), shiny.title = "Generating human artery and vein cells from pluripotent stem cells
-highlights the arterial tropism of Nipah and Hendra viruses",shiny.dir = "/users/stanfordkevin/Downloads/arteryveinscRNA/", shiny.footnotes = citation,default.gene1 = "CDH5", default.gene2 = "SOX17",default.multigene = c("CXCR4","EFNB2","DLL4", "UNC5B", "APLN","NR2F2","FLRT2","NT5E","APLNR")) 
+highlights the arterial tropism of Nipah and Hendra viruses",shiny.dir = "~/arteryveinscRNA/", shiny.footnotes = citation,default.gene1 = "CDH5", default.gene2 = "SOX17",default.multigene = c("CXCR4","EFNB2","DLL4", "UNC5B", "APLN","NR2F2","FLRT2","NT5E","APLNR")) 
 rsconnect::setAccountInfo(name='anglab', token='A32B2D1D8EC80A3DCA18FE87D57BF4C1', secret='Y8MOzKBtRcH+XvwM2IJMcL2e4gEQunRTw0VC7bUo')
 rsconnect::deployApp("/users/stanfordkevin/Downloads/arteryveinscRNA/")
 
