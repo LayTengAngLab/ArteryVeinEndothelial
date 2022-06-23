@@ -14,25 +14,19 @@ library(RColorBrewer)
 setwd("~/Kallisto_quant_files")
 files = list.files()
 
-#Reorder files
 files = files[c(12:14,1:11)]
 
-#Get sample names
 samples=gsub("_abundance.tsv","",files)
 names(files) = samples
 
-#Make key to convert ensembl transcript ids to gene names
 edb = EnsDb.Hsapiens.v86
 tx = transcripts(edb, columns = c("tx_id", "gene_name"), return.type = "DataFrame")
 
-#Import transcript abundance data
 txi = tximport(files, type = "kallisto", tx2gene = tx, ignoreTxVersion = TRUE)
 
-#Set up metadata
 cell_type = as.factor(c(rep("artery",2),
                         rep("vein", 2)))
 
-#Add metadata columns 
 comparisons = c("artery", "vein")
 meta_data = data.frame(sample = samples, cell_type = cell_type)
 meta_data[comparisons] = 0 
@@ -43,7 +37,6 @@ for (i in 1:length(comparisons)){
 meta_data[comparisons]=lapply(meta_data[comparisons], factor)
 class(meta_data)
 
-#General dds
 dds <- DESeqDataSetFromTximport(txi,
                                 colData = meta_data,
                                 design = ~ cell_type)
@@ -52,10 +45,8 @@ dds<- DESeq(dds)
 class(dds)
 rld<-rlog(dds)
 
-#Make DESeqDataSet for artery comparison
 dds_artery = DESeqDataSetFromTximport(txi, colData = meta_data, design = ~ artery)
 
-#Run differential expression analysis with default parameters
 dds_artery = DESeq(dds_artery)
 resultsNames(dds_artery)
 res_artery = results(dds_artery, contrast = c("artery", "1", "0"), name="artery_1_vs_0")
@@ -73,10 +64,8 @@ res_artery_top
 head(res_artery_top, 15)
 res_artery_top80 <- head(res_artery_top, 80)
 
-#Make DESeqDataSet for vein comparison 
 dds_vein = DESeqDataSetFromTximport(txi, colData = meta_data, design = ~ vein)
 
-#Run differential expression analysis with default parameters
 dds_vein = DESeq(dds_vein)
 res_vein = results(dds_vein, contrast = c("vein", "1", "0"))
 res_vein
@@ -92,8 +81,6 @@ res_vein_top <- res_vein_tibble %>%
 res_vein_top
 head(res_vein_top, 15)
 res_vein_top80 <- head(res_vein_top,80)
-
-#Plot heatmap for artery vein comparison---- 
 
 rownames<- c(res_artery_top$geneID, res_vein_top$geneID)
 dds
